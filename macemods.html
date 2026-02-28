@@ -3,391 +3,421 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mace Mods — Free Minecraft Bedrock Mods</title>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+<title>Mace Mods | Premium Bedrock Addons</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg-dark: #1a1a2e;
-    --bg-card: #16213e;
-    --bg-card-hover: #1a2744;
-    --accent-green: #4ade80;
-    --accent-emerald: #34d399;
-    --accent-blue: #60a5fa;
-    --accent-purple: #a78bfa;
-    --accent-yellow: #fbbf24;
-    --accent-red: #f87171;
-    --accent-orange: #fb923c;
-    --accent-pink: #f472b6;
-    --text-primary: #f1f5f9;
-    --text-secondary: #94a3b8;
-    --border: #334155;
+    --bg-deep: #050505;
+    --bg-surface: #0f1115;
+    --primary: #00ff9d; /* Cyberpunk Green */
+    --primary-glow: rgba(0, 255, 157, 0.4);
+    --accent-blue: #00f0ff;
+    --accent-purple: #bd00ff;
+    --accent-gold: #ffcc00;
+    --text-main: #ffffff;
+    --text-muted: #8b9bb4;
+    --border: rgba(255, 255, 255, 0.08);
+    --glass: rgba(20, 25, 30, 0.6);
+    --card-radius: 16px;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
-    background: var(--bg-dark);
-    color: var(--text-primary);
-    font-family: 'Outfit', sans-serif;
+    background-color: var(--bg-deep);
+    color: var(--text-main);
+    font-family: 'Space Grotesk', sans-serif;
     min-height: 100vh;
     overflow-x: hidden;
+    /* Noise texture */
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
   }
 
-  /* Pixel grid background */
-  body::before {
-    content: '';
+  /* Ambient Background Glows */
+  .ambient-light {
     position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(74, 222, 128, 0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(74, 222, 128, 0.03) 1px, transparent 1px);
-    background-size: 24px 24px;
-    pointer-events: none;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     z-index: 0;
-  }
-
-  /* Floating particles */
-  .particles {
-    position: fixed;
-    inset: 0;
     pointer-events: none;
-    z-index: 0;
     overflow: hidden;
   }
-  .particle {
+  .orb {
     position: absolute;
-    width: 4px;
-    height: 4px;
-    background: var(--accent-green);
-    opacity: 0;
-    animation: float-up 8s infinite;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.4;
+    animation: pulse-move 20s infinite alternate;
   }
-  @keyframes float-up {
-    0% { opacity: 0; transform: translateY(100vh) scale(0); }
-    10% { opacity: 0.6; }
-    90% { opacity: 0.2; }
-    100% { opacity: 0; transform: translateY(-20px) scale(1); }
+  .orb-1 { width: 600px; height: 600px; background: #005544; top: -20%; left: -10%; }
+  .orb-2 { width: 500px; height: 500px; background: #002244; bottom: -10%; right: -10%; animation-delay: -5s; }
+
+  @keyframes pulse-move {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(50px, 50px) scale(1.1); }
   }
 
   .container {
     position: relative;
-    z-index: 1;
-    max-width: 1200px;
+    z-index: 2;
+    max-width: 1280px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 0 24px;
   }
 
-  /* Header */
+  /* --- HEADER --- */
   .header {
     text-align: center;
-    padding: 50px 20px 40px;
+    padding: 80px 20px 60px;
     position: relative;
   }
-  .header::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 200px;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--accent-green), transparent);
-  }
-  .logo-badge {
-    display: inline-block;
-    background: linear-gradient(135deg, #065f46, #064e3b);
-    border: 2px solid var(--accent-green);
-    padding: 8px 20px;
-    font-family: 'Press Start 2P', monospace;
-    font-size: 10px;
-    color: var(--accent-green);
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    margin-bottom: 20px;
-    animation: badge-glow 3s ease-in-out infinite;
-  }
-  @keyframes badge-glow {
-    0%, 100% { box-shadow: 0 0 10px rgba(74, 222, 128, 0.2); }
-    50% { box-shadow: 0 0 25px rgba(74, 222, 128, 0.4); }
-  }
-  .header h1 {
-    font-family: 'Press Start 2P', monospace;
-    font-size: clamp(18px, 4vw, 32px);
-    line-height: 1.6;
-    background: linear-gradient(180deg, #fff 30%, var(--accent-green));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 12px;
-  }
-  .header p {
-    color: var(--text-secondary);
-    font-size: 16px;
-    font-weight: 400;
-    max-width: 500px;
-    margin: 0 auto;
-    line-height: 1.6;
-  }
-  .header .count {
-    display: inline-block;
-    margin-top: 16px;
-    background: rgba(74, 222, 128, 0.1);
-    border: 1px solid rgba(74, 222, 128, 0.2);
-    padding: 6px 16px;
-    border-radius: 100px;
-    font-size: 13px;
-    color: var(--accent-green);
-    font-weight: 600;
-  }
-
-  /* Grid */
-  .mods-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 20px;
-    padding: 40px 0;
-  }
-
-  /* Mod Card */
-  .mod-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
-  }
-  .mod-card:hover {
-    transform: translateY(-4px);
-    border-color: var(--card-accent, var(--accent-green));
-    box-shadow: 0 12px 40px rgba(0,0,0,0.4), 0 0 30px rgba(var(--glow-rgb, 74, 222, 128), 0.1);
-    background: var(--bg-card-hover);
-  }
-
-  .card-banner {
-    height: 100px;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-  }
-  .card-banner::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    opacity: 0.15;
-    background-image:
-      linear-gradient(45deg, transparent 48%, currentColor 48%, currentColor 52%, transparent 52%),
-      linear-gradient(-45deg, transparent 48%, currentColor 48%, currentColor 52%, transparent 52%);
-    background-size: 16px 16px;
-  }
-  .card-banner .emoji {
-    font-size: 42px;
-    z-index: 1;
-    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
-    transition: transform 0.3s ease;
-  }
-  .mod-card:hover .card-banner .emoji {
-    transform: scale(1.15) rotate(-3deg);
-  }
-
-  .card-body {
-    padding: 20px;
-  }
-  .card-body h3 {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 11px;
-    line-height: 1.6;
-    margin-bottom: 8px;
-    color: var(--text-primary);
-  }
-  .card-body .desc {
-    font-size: 14px;
-    color: var(--text-secondary);
-    line-height: 1.6;
-    margin-bottom: 16px;
-    min-height: 44px;
-  }
-
-  .tag-row {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-    margin-bottom: 16px;
-  }
-  .tag {
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    padding: 3px 8px;
-    border-radius: 4px;
-    background: rgba(255,255,255,0.06);
-    color: var(--text-secondary);
-  }
-  .tag.cheats { color: var(--accent-yellow); background: rgba(251, 191, 36, 0.1); }
-  .tag.beta { color: var(--accent-red); background: rgba(248, 113, 113, 0.1); }
-  .tag.fun { color: var(--accent-pink); background: rgba(244, 114, 182, 0.1); }
-  .tag.build { color: var(--accent-blue); background: rgba(96, 165, 250, 0.1); }
-  .tag.explore { color: var(--accent-purple); background: rgba(167, 139, 250, 0.1); }
-
-  .card-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 14px 20px;
-    border-top: 1px solid var(--border);
-  }
-  .file-size {
-    font-size: 12px;
-    color: var(--text-secondary);
-    font-weight: 600;
-  }
-  .download-btn {
+  
+  .badge {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: linear-gradient(135deg, #065f46, #047857);
-    color: var(--accent-green);
+    padding: 8px 16px;
+    border-radius: 100px;
+    background: rgba(0, 255, 157, 0.1);
+    border: 1px solid rgba(0, 255, 157, 0.2);
     font-family: 'Press Start 2P', monospace;
-    font-size: 9px;
-    padding: 10px 18px;
-    border: 1px solid var(--accent-green);
-    border-radius: 6px;
-    cursor: pointer;
-    text-decoration: none;
-    transition: all 0.2s ease;
-    letter-spacing: 1px;
+    font-size: 10px;
+    color: var(--primary);
+    margin-bottom: 24px;
+    box-shadow: 0 0 20px rgba(0, 255, 157, 0.1);
   }
-  .download-btn:hover {
-    background: linear-gradient(135deg, #047857, #059669);
-    box-shadow: 0 0 20px rgba(74, 222, 128, 0.3);
-    transform: scale(1.03);
-  }
-  .download-btn:active {
-    transform: scale(0.97);
-  }
-  .download-btn svg {
-    width: 14px;
-    height: 14px;
-    fill: currentColor;
+  .badge::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: var(--primary);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--primary);
+    animation: blink 2s infinite;
   }
 
-  /* Free badge */
-  .free-badge {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    background: var(--accent-green);
-    color: #000;
-    font-family: 'Press Start 2P', monospace;
-    font-size: 7px;
-    padding: 4px 8px;
-    border-radius: 3px;
-    z-index: 2;
-    letter-spacing: 1px;
+  h1 {
+    font-family: 'Press Start 2P', cursive;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    line-height: 1.4;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    background: linear-gradient(180deg, #fff 0%, var(--text-muted) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    letter-spacing: -2px;
+  }
+  
+  .header p {
+    font-size: 1.2rem;
+    color: var(--text-muted);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
   }
 
-  /* Install guide */
-  .install-section {
-    margin: 20px 0 50px;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 30px;
-  }
-  .install-section h2 {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 12px;
-    color: var(--accent-yellow);
-    margin-bottom: 20px;
-    line-height: 1.8;
-  }
-  .steps {
+  /* --- GRID SYSTEM --- */
+  .mods-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 32px;
+    padding-bottom: 80px;
   }
-  .step {
+
+  /* --- CARD DESIGN --- */
+  .card-wrap {
+    perspective: 1000px;
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  }
+
+  .mod-card {
+    position: relative;
+    background: var(--glass);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    border-radius: var(--card-radius);
+    overflow: hidden;
+    transition: transform 0.1s linear, box-shadow 0.3s ease;
+    height: 100%;
     display: flex;
-    gap: 12px;
-    align-items: flex-start;
+    flex-direction: column;
+    transform-style: preserve-3d;
   }
-  .step-num {
-    flex-shrink: 0;
-    width: 28px;
-    height: 28px;
-    background: rgba(74, 222, 128, 0.1);
-    border: 1px solid rgba(74, 222, 128, 0.3);
-    border-radius: 6px;
+
+  /* The Glow Border Effect */
+  .mod-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--card-radius);
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  .mod-card:hover {
+    box-shadow: 
+      0 20px 40px rgba(0,0,0,0.4),
+      0 0 50px var(--glow-color-low);
+  }
+
+  .card-banner {
+    height: 140px;
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
+    background: radial-gradient(circle at center, var(--bg-surface), transparent);
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+  }
+  
+  /* Grid pattern in card header */
+  .card-banner-grid {
+    position: absolute;
+    inset: 0;
+    background-image: 
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 20px 20px;
+    mask-image: linear-gradient(to bottom, black, transparent);
+  }
+
+  .emoji-wrapper {
+    font-size: 64px;
+    filter: drop-shadow(0 0 20px var(--glow-color));
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 2;
+  }
+  
+  .mod-card:hover .emoji-wrapper {
+    transform: scale(1.2) translateY(-5px) rotate(-5deg);
+  }
+
+  .card-body {
+    padding: 24px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+
+  .mod-card h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: #fff;
+    margin: 0;
+    letter-spacing: -0.5px;
+  }
+  
+  .size-tag {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    color: var(--text-muted);
+    background: rgba(255,255,255,0.05);
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+
+  .desc {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 20px;
+    flex-grow: 1;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+  
+  .tag {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+  }
+  
+  /* --- DOWNLOAD BUTTON --- */
+  .download-btn {
+    position: relative;
+    width: 100%;
+    padding: 14px;
+    border: none;
+    background: var(--bg-surface);
+    color: #fff;
     font-family: 'Press Start 2P', monospace;
     font-size: 10px;
-    color: var(--accent-green);
+    cursor: pointer;
+    overflow: hidden;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 0 rgba(0,0,0,0.5);
+    transform: translateY(0);
   }
-  .step p {
-    font-size: 13px;
-    color: var(--text-secondary);
-    line-height: 1.5;
+  
+  .download-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    transform: translateX(-100%);
+    transition: 0.5s;
   }
-  .step strong { color: var(--text-primary); }
+
+  .download-btn:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 rgba(0,0,0,0.5), 0 0 20px var(--primary-glow);
+  }
+  
+  .download-btn:hover::before {
+    transform: translateX(100%);
+  }
+
+  .download-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 0 0 rgba(0,0,0,0);
+  }
+
+  /* --- INSTALL GUIDE --- */
+  .install-guide {
+    background: #000;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 0;
+    margin: 40px auto 80px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    max-width: 900px;
+  }
+  
+  .terminal-header {
+    background: #1a1b20;
+    padding: 12px 20px;
+    display: flex;
+    gap: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot.red { background: #ff5f56; }
+  .dot.yellow { background: #ffbd2e; }
+  .dot.green { background: #27c93f; }
+  .terminal-title { margin-left: 10px; color: var(--text-muted); font-size: 12px; font-family: monospace; }
+
+  .steps-container {
+    padding: 30px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+  
+  .step-card {
+    position: relative;
+    padding-left: 16px;
+    border-left: 2px solid var(--border);
+  }
+  .step-card strong { color: var(--primary); display: block; margin-bottom: 4px; font-size: 1.1rem; }
+  .step-card p { color: var(--text-muted); font-size: 0.9rem; }
 
   /* Footer */
   .footer {
     text-align: center;
-    padding: 30px;
-    color: var(--text-secondary);
-    font-size: 12px;
+    padding: 40px;
     border-top: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 12px;
+    background: #08080a;
   }
 
-  @media (max-width: 700px) {
+  @keyframes fadeInUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+  /* Mobile Tweaks */
+  @media (max-width: 768px) {
+    h1 { font-size: 1.8rem; }
     .mods-grid { grid-template-columns: 1fr; }
-    .header { padding: 30px 10px 30px; }
   }
 </style>
 </head>
 <body>
 
-<div class="particles" id="particles"></div>
+<div class="ambient-light">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+</div>
 
 <div class="container">
   <div class="header">
-    <div class="logo-badge">⛏ Bedrock Edition</div>
+    <div class="badge">Version 1.21+</div>
     <h1>Mace Mods</h1>
-    <p>Free behavior packs for Minecraft Bedrock. Download, double-click, and play.</p>
-    <div class="count">✦ 7 Mods Available</div>
+    <p>Premium behavior packs for Minecraft Bedrock. <br>Curated chaos, completely free.</p>
   </div>
 
   <div class="mods-grid" id="modsGrid"></div>
 
-  <div class="install-section">
-    <h2>📋 How to Install</h2>
-    <div class="steps">
-      <div class="step">
-        <div class="step-num">1</div>
-        <p><strong>Download</strong> the .mcpack file</p>
+  <div class="install-guide">
+    <div class="terminal-header">
+      <div class="dot red"></div>
+      <div class="dot yellow"></div>
+      <div class="dot green"></div>
+      <span class="terminal-title">user@minecraft:~/install-guide</span>
+    </div>
+    <div class="steps-container">
+      <div class="step-card">
+        <strong>01. Download</strong>
+        <p>Get the .mcpack file below.</p>
       </div>
-      <div class="step">
-        <div class="step-num">2</div>
-        <p><strong>Double-click</strong> it — Minecraft opens and imports it</p>
+      <div class="step-card">
+        <strong>02. Open</strong>
+        <p>Double-click to launch Minecraft.</p>
       </div>
-      <div class="step">
-        <div class="step-num">3</div>
-        <p><strong>Create a world</strong> → Behavior Packs → Activate</p>
+      <div class="step-card">
+        <strong>03. Activate</strong>
+        <p>World Settings → Behavior Packs.</p>
       </div>
-      <div class="step">
-        <div class="step-num">4</div>
-        <p>Turn on <strong>Activate Cheats</strong> and play!</p>
+      <div class="step-card">
+        <strong>04. Enable Cheats</strong>
+        <p>Required for scripts to run.</p>
       </div>
     </div>
   </div>
 
   <div class="footer">
-    Made with ⛏ by Mace Mods — Minecraft Bedrock Edition (Windows 10/11)
+    DESIGNED FOR MINECRAFT BEDROCK EDITION<br><br>
+    Not affiliated with Mojang Studios.
   </div>
 </div>
 
@@ -396,131 +426,125 @@ const MODS = [
   {
     name: "Olympics",
     emoji: "🏅",
-    desc: "9 sporting events — sprint, swimming, archery, parkour, boxing, horse racing & more! Auto-builds on join.",
+    desc: "9 sporting events including archery, parkour & boxing. Auto-builds arenas on join.",
     file: "olympics.mcpack",
     size: "12 KB",
-    tags: ["fun", "build"],
-    bannerColor: "#854d0e",
-    accent: "#fbbf24",
-    glowRgb: "251, 191, 36",
-    requires: "beta"
+    color: "#ffcc00",
+    tags: ["Minigame", "Builds"]
   },
   {
     name: "Chaos Mode",
     emoji: "🌪️",
-    desc: "25 random events every 30 seconds — lightning storms, TNT rain, speed boosts, gravity flips, mob swarms!",
+    desc: "25 random events every 30s. Lightning, TNT rain, gravity flips, and mob swarms.",
     file: "chaos-mode.mcpack",
     size: "9 KB",
-    tags: ["fun", "cheats"],
-    bannerColor: "#7c2d12",
-    accent: "#fb923c",
-    glowRgb: "251, 146, 60"
+    color: "#ff5e00",
+    tags: ["Hardcore", "Cheats"]
   },
   {
     name: "Chaos Drops",
-    emoji: "🎁",
-    desc: "Every block drops 1-3 random items! Every mob drops random loot! 68 different items possible.",
+    emoji: "💎",
+    desc: "Every block and mob drops randomized loot. Break dirt, get diamonds or bedrock.",
     file: "chaos-drops.mcpack",
     size: "1.6 KB",
-    tags: ["fun"],
-    bannerColor: "#581c87",
-    accent: "#a78bfa",
-    glowRgb: "167, 139, 250",
-    requires: "beta"
+    color: "#bd00ff",
+    tags: ["Survival", "RNG"]
   },
   {
     name: "Wrong Recipes",
-    emoji: "🔀",
-    desc: "110 crafting recipes produce the wrong item! Craft a sword, get a cake. Craft a pickaxe, get an ender pearl.",
+    emoji: "🛑",
+    desc: "110 cursed crafting recipes. Craft a sword? Get a cake. Craft a pickaxe? Get an egg.",
     file: "wrong-recipes.mcpack",
     size: "29 KB",
-    tags: ["fun", "cheats"],
-    bannerColor: "#1e3a5f",
-    accent: "#60a5fa",
-    glowRgb: "96, 165, 250"
+    color: "#00f0ff",
+    tags: ["Troll", "Challenge"]
   },
   {
     name: "Earth Structures",
     emoji: "🌍",
-    desc: "12 famous landmarks — Eiffel Tower, Pyramids, Colosseum, Taj Mahal, Statue of Liberty & more with loot chests!",
+    desc: "Instantly generates 12 landmarks like the Eiffel Tower and Pyramids with loot.",
     file: "earth-structures.mcpack",
     size: "18 KB",
-    tags: ["build", "explore"],
-    bannerColor: "#14532d",
-    accent: "#4ade80",
-    glowRgb: "74, 222, 128"
+    color: "#00ff9d",
+    tags: ["Exploration", "Builds"]
   },
   {
     name: "Wild West",
     emoji: "🤠",
-    desc: "Spawns a full western town — saloon, sheriff office, bank, general store, water tower, and horses!",
+    desc: "Spawns a full western town: saloons, banks, sheriff office, and horses.",
     file: "wild-west.mcpack",
     size: "2.4 KB",
-    tags: ["build", "explore"],
-    bannerColor: "#78350f",
-    accent: "#fbbf24",
-    glowRgb: "251, 191, 36"
+    color: "#ffaa00",
+    tags: ["Adventure", "Map"]
   },
   {
     name: "Random Step",
     emoji: "🦶",
-    desc: "Blocks transform into random blocks when you walk on them! Grass becomes diamond ore, stone becomes lava!",
+    desc: "The floor is... random. Blocks transform into other blocks when you walk on them.",
     file: "random-step.mcpack",
     size: "3.3 KB",
-    tags: ["fun", "cheats"],
-    bannerColor: "#831843",
-    accent: "#f472b6",
-    glowRgb: "244, 114, 182"
+    color: "#ff0055",
+    tags: ["Chaos", "Fun"]
   },
 ];
 
 const grid = document.getElementById('modsGrid');
 
-MODS.forEach(mod => {
-  const card = document.createElement('div');
-  card.className = 'mod-card';
-  card.style.setProperty('--card-accent', mod.accent);
-  card.style.setProperty('--glow-rgb', mod.glowRgb);
+MODS.forEach((mod, index) => {
+  const cardWrap = document.createElement('div');
+  cardWrap.className = 'card-wrap';
+  cardWrap.style.animationDelay = `${index * 100}ms`;
 
-  const tagsHTML = mod.tags.map(t => `<span class="tag ${t}">${t}</span>`).join('');
-  const betaTag = mod.requires === 'beta' ? '<span class="tag beta">Beta APIs</span>' : '';
+  // Create Tag HTML
+  const tagsHtml = mod.tags.map(tag => 
+    `<span class="tag" style="background: ${mod.color}20; color: ${mod.color}; border-color: ${mod.color}40">${tag}</span>`
+  ).join('');
 
-  card.innerHTML = `
-    <div class="free-badge">FREE</div>
-    <div class="card-banner" style="background: linear-gradient(135deg, ${mod.bannerColor}, ${mod.bannerColor}88); color: ${mod.accent}">
-      <div class="emoji">${mod.emoji}</div>
-    </div>
-    <div class="card-body">
-      <h3>${mod.name}</h3>
-      <p class="desc">${mod.desc}</p>
-      <div class="tag-row">
-        ${tagsHTML}
-        <span class="tag cheats">Cheats</span>
-        ${betaTag}
+  cardWrap.innerHTML = `
+    <div class="mod-card" 
+         style="--glow-color: ${mod.color}; --glow-color-low: ${mod.color}20"
+         onmousemove="handleMove(event, this)" 
+         onmouseleave="handleLeave(this)">
+      <div class="card-banner">
+        <div class="card-banner-grid"></div>
+        <div class="emoji-wrapper">${mod.emoji}</div>
+      </div>
+      <div class="card-body">
+        <div class="card-header-row">
+          <h3>${mod.name}</h3>
+          <span class="size-tag">${mod.size}</span>
+        </div>
+        <div class="tags">${tagsHtml}</div>
+        <p class="desc">${mod.desc}</p>
+        <a href="${mod.file}" class="download-btn">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 16l-6-6h4V4h4v6h4l-6 6zm-8 4h16v-2H4v2z"/>
+          </svg>
+          DOWNLOAD PACK
+        </a>
       </div>
     </div>
-    <div class="card-footer">
-      <span class="file-size">.mcpack · ${mod.size}</span>
-      <a class="download-btn" href="${mod.file}" download="${mod.file}">
-        <svg viewBox="0 0 24 24"><path d="M12 16l-6-6h4V4h4v6h4l-6 6zm-8 4h16v-2H4v2z"/></svg>
-        DOWNLOAD
-      </a>
-    </div>
   `;
-  grid.appendChild(card);
+  grid.appendChild(cardWrap);
 });
 
-// Particles
-const particleContainer = document.getElementById('particles');
-for (let i = 0; i < 30; i++) {
-  const p = document.createElement('div');
-  p.className = 'particle';
-  p.style.left = Math.random() * 100 + '%';
-  p.style.animationDelay = Math.random() * 8 + 's';
-  p.style.animationDuration = (6 + Math.random() * 6) + 's';
-  const colors = ['#4ade80', '#60a5fa', '#fbbf24', '#a78bfa', '#f472b6'];
-  p.style.background = colors[Math.floor(Math.random() * colors.length)];
-  particleContainer.appendChild(p);
+// 3D Tilt Effect Logic
+function handleMove(e, card) {
+  const rect = card.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  
+  const centerX = rect.width / 2;
+  const centerY = rect.height / 2;
+  
+  const rotateX = ((y - centerY) / centerY) * -5; // Max rotation deg
+  const rotateY = ((x - centerX) / centerX) * 5;
+
+  card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+}
+
+function handleLeave(card) {
+  card.style.transform = `perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)`;
 }
 </script>
 </body>
