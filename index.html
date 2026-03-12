@@ -406,7 +406,7 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(90deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.3) 100%);
+    background: linear-gradient(90deg, var(--feat-color) 0%, var(--feat-color) 20%, transparent 60%);
   }
   .featured-emoji, .featured-info, .featured .play-circle {
     position: relative;
@@ -677,7 +677,7 @@ if (featuredMod) {
     ? ''
     : `<div class="featured-emoji">${featuredMod.emoji}</div>`;
   const featuredStyle = featuredMod.thumbnail
-    ? `background: ${featuredMod.bannerColor}; box-shadow: 0 0 40px ${featuredMod.accent}20;`
+    ? `--feat-color: ${featuredMod.bannerColor}; background: ${featuredMod.bannerColor}; box-shadow: 0 0 40px ${featuredMod.accent}20;`
     : `background: linear-gradient(135deg, ${featuredMod.bannerColor}, ${featuredMod.accent}30); box-shadow: 0 0 40px ${featuredMod.accent}20;`;
   fs.innerHTML = `
     <div class="featured" style="${featuredStyle}">
