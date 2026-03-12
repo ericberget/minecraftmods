@@ -167,18 +167,76 @@
   }
 
   .card-banner {
-    height: 120px;
+    height: 140px;
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
+    overflow: hidden;
   }
 
   .card-banner::after {
     content: '';
     position: absolute;
-    bottom: 0; left: 0; right: 0; height: 40px;
+    bottom: 0; left: 0; right: 0; height: 60px;
     background: linear-gradient(to top, var(--bg-surface), transparent);
+    z-index: 2;
+  }
+
+  .card-banner.has-thumb {
+    cursor: pointer;
+  }
+
+  .card-banner .thumb-bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.4s ease, filter 0.4s ease;
+  }
+
+  .card-banner .thumb-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.6) 100%);
+  }
+
+  .card:hover .card-banner .thumb-bg {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+  }
+
+  .card-banner .play-circle {
+    width: 48px;
+    height: 48px;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(8px);
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+    transition: all 0.3s ease;
+  }
+
+  .card-banner .play-circle svg {
+    width: 20px;
+    height: 20px;
+    fill: #fff;
+    margin-left: 3px;
+  }
+
+  .card:hover .card-banner .play-circle {
+    background: var(--accent);
+    border-color: var(--accent);
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(var(--glow), 0.5);
+  }
+
+  .card:hover .card-banner .play-circle svg {
+    fill: #000;
   }
 
   .emoji {
@@ -251,32 +309,32 @@
   .tag.survival { color: #34d399; background: rgba(52, 211, 153, 0.08); }
 
   .card-footer {
-    padding: 1.2rem 1.5rem;
+    padding: 1rem 1.5rem;
     border-top: 1px solid var(--border);
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
+    gap: 0.5rem;
     background: rgba(0,0,0,0.2);
   }
 
-  .file-size {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    font-family: monospace;
+  .download-btn, .card-footer .preview-btn {
+    flex: 1;
+    justify-content: center;
+    text-decoration: none;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
   }
 
   .download-btn {
     background: var(--bg-surface-hover);
     color: var(--text-main);
-    text-decoration: none;
-    padding: 0.6rem 1rem;
-    border-radius: 8px;
-    font-weight: 700;
-    font-size: 0.9rem;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: all 0.2s ease;
     border: 1px solid var(--border);
   }
 
@@ -403,15 +461,6 @@
   .preview-btn {
     background: rgba(168, 85, 247, 0.15);
     color: #c084fc;
-    text-decoration: none;
-    padding: 0.6rem 1rem;
-    border-radius: 8px;
-    font-weight: 700;
-    font-size: 0.9rem;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    transition: all 0.2s ease;
     border: 1px solid rgba(168, 85, 247, 0.3);
     cursor: pointer;
   }
@@ -574,7 +623,7 @@ const mods = [
   { name: "Lucky Blocks", emoji: "🎲", desc: "Sponge = lucky block! Break for random loot or disasters. 33 outcomes — diamonds, armor, or zombies!", file: "lucky-block.mcpack", size: "4.7 KB", tags: ["fun", "lucky"], bannerColor: "#713f12", accent: "#facc15", glowRgb: "250, 204, 21", beta: true, video: null },
   { name: "Lucky Block Structures", emoji: "🏗️", desc: "10 structures made entirely of lucky blocks! Pyramids, towers, mazes, bridges — break every block!", file: "lucky-block-structures.mcpack", size: "7.3 KB", tags: ["build", "lucky"], bannerColor: "#92400e", accent: "#fbbf24", glowRgb: "251, 191, 36", beta: true, video: null },
   { name: "Lucky Dungeon", emoji: "🏚️", desc: "Explore dungeons filled with lucky blocks! Break blocks for loot while fighting through mobs!", file: "lucky-dungeon.mcpack", size: "6.6 KB", tags: ["explore", "lucky"], bannerColor: "#44403c", accent: "#d6d3d1", glowRgb: "214, 211, 209", beta: true, video: null },
-  { name: "Lucky Virus", emoji: "🦠", desc: "Lucky blocks spread like a virus! One block infects nearby blocks, creating a growing chain of chaos!", file: "lucky-virus.mcpack", size: "6.2 KB", tags: ["fun", "lucky"], bannerColor: "#14532d", accent: "#22c55e", glowRgb: "34, 197, 94", beta: true, video: "lucky-virus.mp4" },
+  { name: "Lucky Virus", emoji: "🦠", desc: "Lucky blocks spread like a virus! One block infects nearby blocks, creating a growing chain of chaos!", file: "lucky-virus.mcpack", size: "6.2 KB", tags: ["fun", "lucky"], bannerColor: "#14532d", accent: "#22c55e", glowRgb: "34, 197, 94", beta: true, video: "lucky-virus.mp4", thumbnail: "lucky-virus.jpg" },
   { name: "Lucky Block Texture", emoji: "🎨", desc: "Resource pack that makes sponge blocks look like classic lucky blocks with the ? symbol!", file: "lucky-block-texture.mcpack", size: "1.9 KB", tags: ["lucky"], bannerColor: "#854d0e", accent: "#eab308", glowRgb: "234, 179, 8", beta: false, video: null },
   { name: "OneBlock", emoji: "1️⃣", desc: "One regenerating block! Break it — it comes back as a random block. 5 phases, 600+ blocks to progression!", file: "oneblock.mcpack", size: "5.6 KB", tags: ["survival"], bannerColor: "#701a75", accent: "#e879f9", glowRgb: "232, 121, 249", beta: true, video: null },
   { name: "More Structures", emoji: "🏰", desc: "Extra structures that spawn in your world — dungeons, towers, ruins, and hidden bases to explore!", file: "more-structures.mcpack", size: "5.8 KB", tags: ["build", "explore"], bannerColor: "#3f3f46", accent: "#e4e4e7", glowRgb: "228, 228, 231", beta: false, video: null },
@@ -669,11 +718,18 @@ function renderMods(filterTag) {
           <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> PREVIEW</a>`
       : '';
 
+    const bannerContent = mod.thumbnail
+      ? `<div class="card-banner has-thumb" style="background: ${mod.bannerColor};" onclick="if('${mod.video}') openPreview('${mod.video}', '${mod.name}')">
+          <div class="thumb-bg" style="background-image: url('thumbnails/${mod.thumbnail}');"></div>
+          <div class="play-circle"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+        </div>`
+      : `<div class="card-banner" style="background: radial-gradient(circle at center, ${mod.accent}40 0%, ${mod.bannerColor} 100%);">
+          <div class="emoji">${mod.emoji}</div>
+        </div>`;
+
     card.innerHTML = `
       <div class="free-badge">FREE</div>
-      <div class="card-banner" style="background: radial-gradient(circle at center, ${mod.accent}40 0%, ${mod.bannerColor} 100%);">
-        <div class="emoji">${mod.emoji}</div>
-      </div>
+      ${bannerContent}
       <div class="card-body">
         <h3>${mod.name}</h3>
         <p class="desc">${mod.desc}</p>
@@ -683,14 +739,11 @@ function renderMods(filterTag) {
         </div>
       </div>
       <div class="card-footer">
-        <span class="file-size">.mcpack · ${mod.size}</span>
-        <div style="display:flex;gap:0.5rem;">
-          ${previewBtn}
-          <a class="download-btn" href="#" onclick="event.preventDefault(); downloadPack('${mod.file}')">
-            <svg viewBox="0 0 24 24"><path d="M12 16l-6-6h4V4h4v6h4l-6 6zm-8 4h16v-2H4v2z"/></svg>
-            DOWNLOAD
-          </a>
-        </div>
+        ${previewBtn}
+        <a class="download-btn" href="#" onclick="event.preventDefault(); downloadPack('${mod.file}')">
+          <svg viewBox="0 0 24 24"><path d="M12 16l-6-6h4V4h4v6h4l-6 6zm-8 4h16v-2H4v2z"/></svg>
+          DOWNLOAD
+        </a>
       </div>
     `;
     grid.appendChild(card);
