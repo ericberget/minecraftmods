@@ -347,35 +347,145 @@
     box-shadow: 0 0 15px rgba(var(--glow), 0.4);
   }
 
-  /* Install section */
+  /* Install section — timeline style */
   .install-section {
-    margin: 0 5% 3rem;
-    background: var(--bg-surface);
+    margin: 0 5% 2rem;
+    background: linear-gradient(135deg, var(--bg-surface) 0%, rgba(16, 185, 129, 0.05) 100%);
     border: 1px solid var(--border);
     border-radius: 20px;
-    padding: 2rem;
+    padding: 2.5rem;
   }
-  .install-section h2 {
-    font-family: var(--font-game);
-    font-size: 0.8rem;
-    color: #fbbf24;
-    margin-bottom: 1.5rem;
-    letter-spacing: 1px;
+  .install-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .install-icon {
+    width: 48px; height: 48px;
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+  }
+  .install-header h2 {
+    font-size: 1.3rem; font-weight: 700; color: var(--text-main); margin: 0;
+  }
+  .install-header p {
+    font-size: 0.85rem; color: var(--text-muted); margin: 2px 0 0;
   }
   .steps {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1rem;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
   }
-  .step { display: flex; gap: 12px; align-items: flex-start; }
+  .step {
+    display: flex; flex-direction: column; align-items: center;
+    text-align: center; padding: 0 1rem; position: relative;
+  }
+  .step:not(:last-child)::after {
+    content: ''; position: absolute; top: 19px; right: 0;
+    width: 50%; height: 2px; background: rgba(16, 185, 129, 0.2);
+  }
+  .step:not(:first-child)::before {
+    content: ''; position: absolute; top: 19px; left: 0;
+    width: 50%; height: 2px; background: rgba(16, 185, 129, 0.2);
+  }
   .step-num {
-    flex-shrink: 0; width: 32px; height: 32px;
-    background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3);
-    border-radius: 8px; display: flex; align-items: center; justify-content: center;
+    width: 40px; height: 40px;
+    background: rgba(16, 185, 129, 0.15);
+    border: 2px solid rgba(16, 185, 129, 0.4);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
     font-family: var(--font-game); font-size: 0.7rem; color: var(--primary);
+    margin-bottom: 0.75rem; position: relative; z-index: 1;
   }
-  .step p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.5; }
+  .step p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; margin: 0; }
   .step strong { color: var(--text-main); }
+
+  /* FAQ accordion */
+  .faq-section {
+    margin: 0 5% 2rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2.5rem;
+  }
+  .faq-header {
+    display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;
+  }
+  .faq-icon {
+    width: 48px; height: 48px;
+    background: rgba(168, 85, 247, 0.1);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; flex-shrink: 0;
+  }
+  .faq-header h2 {
+    font-size: 1.3rem; font-weight: 700; color: var(--text-main); margin: 0;
+  }
+  .faq-item { border-bottom: 1px solid var(--border); }
+  .faq-item:last-child { border-bottom: none; }
+  .faq-q {
+    width: 100%; background: none; border: none;
+    color: var(--text-main); font-size: 0.95rem; font-weight: 600;
+    padding: 1rem 0; cursor: pointer;
+    display: flex; justify-content: space-between; align-items: center;
+    text-align: left; font-family: inherit; transition: color 0.2s;
+  }
+  .faq-q:hover { color: var(--primary); }
+  .faq-arrow {
+    transition: transform 0.3s ease;
+    font-size: 0.75rem; opacity: 0.5; flex-shrink: 0; margin-left: 1rem;
+  }
+  .faq-item.open .faq-arrow { transform: rotate(180deg); opacity: 1; }
+  .faq-a {
+    max-height: 0; overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+  .faq-item.open .faq-a { max-height: 200px; }
+  .faq-a p {
+    color: var(--text-muted); font-size: 0.9rem; line-height: 1.6;
+    padding: 0 0 1rem; margin: 0;
+  }
+
+  /* About section */
+  .about-section {
+    margin: 0 5% 2rem;
+    background: linear-gradient(135deg, var(--bg-surface) 0%, rgba(251, 191, 36, 0.05) 100%);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2.5rem;
+    display: flex; align-items: flex-start; gap: 2rem;
+  }
+  .about-avatar {
+    width: 80px; height: 80px;
+    background: rgba(251, 191, 36, 0.1);
+    border: 2px solid rgba(251, 191, 36, 0.3);
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.5rem; flex-shrink: 0;
+  }
+  .about-info h2 {
+    font-size: 1.3rem; font-weight: 700;
+    color: var(--text-main); margin: 0 0 0.5rem;
+  }
+  .about-info p {
+    color: var(--text-muted); font-size: 0.9rem; line-height: 1.6;
+    margin: 0 0 0.75rem; max-width: 600px;
+  }
+  .about-badges {
+    display: flex; flex-wrap: wrap; gap: 0.5rem;
+  }
+  .about-badge {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    padding: 4px 10px; border-radius: 6px;
+    font-size: 0.75rem; color: var(--text-muted); font-weight: 600;
+  }
 
   .footer {
     text-align: center; padding: 2rem;
@@ -563,6 +673,12 @@
     .featured-info p { max-width: 100%; }
     .video-modal { width: 95%; }
     .video-close { top: -36px; }
+    .steps { grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .step::before, .step::after { display: none !important; }
+    .about-section { flex-direction: column; text-align: center; }
+    .about-avatar { margin: 0 auto; }
+    .about-info p { max-width: 100%; }
+    .about-badges { justify-content: center; }
   }
 </style>
 </head>
@@ -600,12 +716,75 @@
   </main>
 
   <div class="install-section">
-    <h2>📋 HOW TO INSTALL</h2>
+    <div class="install-header">
+      <div class="install-icon">📦</div>
+      <div>
+        <h2>How to Install</h2>
+        <p>Works on Windows, iOS, Android, Xbox, and Switch</p>
+      </div>
+    </div>
     <div class="steps">
       <div class="step"><div class="step-num">1</div><p><strong>Download</strong> the .mcpack file</p></div>
-      <div class="step"><div class="step-num">2</div><p><strong>Double-click</strong> it — Minecraft opens and imports it</p></div>
-      <div class="step"><div class="step-num">3</div><p><strong>Create a world</strong> → Behavior Packs → Activate</p></div>
-      <div class="step"><div class="step-num">4</div><p>Turn on <strong>Activate Cheats</strong>. If it says Beta APIs, enable that in <strong>Experiments</strong> too.</p></div>
+      <div class="step"><div class="step-num">2</div><p><strong>Open</strong> it — Minecraft imports automatically</p></div>
+      <div class="step"><div class="step-num">3</div><p><strong>Create a world</strong> and activate the Behavior Pack</p></div>
+      <div class="step"><div class="step-num">4</div><p>Enable <strong>Cheats</strong> and <strong>Beta APIs</strong> if needed</p></div>
+    </div>
+  </div>
+
+  <div class="faq-section">
+    <div class="faq-header">
+      <div class="faq-icon">?</div>
+      <h2>Frequently Asked Questions</h2>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+        What version of Minecraft do these work on?
+        <span class="faq-arrow">▼</span>
+      </button>
+      <div class="faq-a"><p>All mods are built for <strong>Minecraft Bedrock Edition</strong> — that's the version on Windows 10/11, iOS, Android, Xbox, PlayStation, and Nintendo Switch. They do NOT work on Java Edition.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+        What are Beta APIs?
+        <span class="faq-arrow">▼</span>
+      </button>
+      <div class="faq-a"><p>Some mods use newer Minecraft scripting features called Beta APIs. When creating your world, go to <strong>Experiments</strong> and turn on <strong>Beta APIs</strong>. Mods that need this are tagged "Beta APIs" on their card.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+        Can I use multiple mods at the same time?
+        <span class="faq-arrow">▼</span>
+      </button>
+      <div class="faq-a"><p>Yes! You can activate multiple behavior packs on the same world. Some combinations create wild results — try Lucky Blocks + Hydra Mode for maximum chaos.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+        The mod isn't working. What do I do?
+        <span class="faq-arrow">▼</span>
+      </button>
+      <div class="faq-a"><p>Make sure <strong>Activate Cheats</strong> is turned on in your world settings. If the mod is tagged "Beta APIs", also enable that under <strong>Experiments</strong>. Try creating a brand new world with the pack activated.</p></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+        Are these mods free?
+        <span class="faq-arrow">▼</span>
+      </button>
+      <div class="faq-a"><p>Yep, 100% free. Every mod on Mace Mods is free to download and use. No ads, no sign-ups, no catches.</p></div>
+    </div>
+  </div>
+
+  <div class="about-section">
+    <div class="about-avatar">⛏</div>
+    <div class="about-info">
+      <h2>About Mace Mods</h2>
+      <p>Mace Mods is built by a 9-year-old Minecraft modder who loves making the game weirder, wilder, and more fun. Every mod here is hand-crafted with behavior packs and scripting — no external tools needed to play.</p>
+      <p>New mods and updates added regularly. Got a mod idea? We're always making new stuff.</p>
+      <div class="about-badges">
+        <span class="about-badge">Minecraft Bedrock</span>
+        <span class="about-badge">Behavior Packs</span>
+        <span class="about-badge">Script API</span>
+        <span class="about-badge">Free Forever</span>
+      </div>
     </div>
   </div>
 
