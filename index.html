@@ -395,6 +395,23 @@
     overflow: hidden;
     border: 1px solid rgba(255,255,255,0.1);
   }
+  .featured-thumb-bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    z-index: 0;
+  }
+  .featured-thumb-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.3) 100%);
+  }
+  .featured-emoji, .featured-info, .featured .play-circle {
+    position: relative;
+    z-index: 1;
+  }
   .featured-emoji {
     font-size: 5rem;
     filter: drop-shadow(0 4px 12px rgba(0,0,0,0.4));
@@ -615,7 +632,7 @@ const PACK_DATA = {
 const mods = [
   { name: "Chaos Drops", emoji: "🎁", desc: "Every block drops random items! Every mob drops random loot! 68 different possible items.", file: "chaos-drops.mcpack", size: "1.6 KB", tags: ["fun"], bannerColor: "#581c87", accent: "#a78bfa", glowRgb: "167, 139, 250", beta: true, video: null },
   { name: "Wild West", emoji: "🤠", desc: "Spawns a full western town — saloon, sheriff office, stables, gold mine, and water tower!", file: "wild-west.mcpack", size: "2.4 KB", tags: ["build", "explore"], bannerColor: "#78350f", accent: "#fbbf24", glowRgb: "251, 191, 36", beta: false, video: null },
-  { name: "Hydra Mode", emoji: "🐉", desc: "Kill a mob and it splits into 2 smaller versions! They split again! Chain reaction chaos!", file: "hydra-mode.mcpack", size: "28.9 KB", tags: ["fun", "mobs"], bannerColor: "#4c1d95", accent: "#c084fc", glowRgb: "192, 132, 252", beta: true, video: null, featured: true },
+  { name: "Hydra Mode", emoji: "🐉", desc: "Kill a mob and it splits into 2 smaller versions! They split again! Chain reaction chaos!", file: "hydra-mode.mcpack", size: "28.9 KB", tags: ["fun", "mobs"], bannerColor: "#4c1d95", accent: "#c084fc", glowRgb: "192, 132, 252", beta: true, video: null },
   { name: "Mob Swap", emoji: "🔄", desc: "Every mob is replaced with a different one! Chickens become ghasts, pigs become blazes, cows become wardens!", file: "mob-swap.mcpack", size: "9.4 KB", tags: ["fun", "mobs"], bannerColor: "#0c4a6e", accent: "#38bdf8", glowRgb: "56, 189, 248", beta: false, video: null },
   { name: "Giant Mobs", emoji: "🦕", desc: "All mobs spawn at massive size! Giant zombies, huge creepers, enormous spiders!", file: "giant-mobs.mcpack", size: "1.2 KB", tags: ["fun", "mobs"], bannerColor: "#365314", accent: "#a3e635", glowRgb: "163, 230, 53", beta: false, video: null },
   { name: "Gravity Flip", emoji: "🔃", desc: "Gravity randomly reverses! Float up, fall down, launch into the sky!", file: "gravity-flip.mcpack", size: "1.2 KB", tags: ["fun"], bannerColor: "#1e1b4b", accent: "#818cf8", glowRgb: "129, 140, 248", beta: false, video: null },
@@ -623,7 +640,7 @@ const mods = [
   { name: "Lucky Blocks", emoji: "🎲", desc: "Sponge = lucky block! Break for random loot or disasters. 33 outcomes — diamonds, armor, or zombies!", file: "lucky-block.mcpack", size: "4.7 KB", tags: ["fun", "lucky"], bannerColor: "#713f12", accent: "#facc15", glowRgb: "250, 204, 21", beta: true, video: null },
   { name: "Lucky Block Structures", emoji: "🏗️", desc: "10 structures made entirely of lucky blocks! Pyramids, towers, mazes, bridges — break every block!", file: "lucky-block-structures.mcpack", size: "7.3 KB", tags: ["build", "lucky"], bannerColor: "#92400e", accent: "#fbbf24", glowRgb: "251, 191, 36", beta: true, video: null },
   { name: "Lucky Dungeon", emoji: "🏚️", desc: "Explore dungeons filled with lucky blocks! Break blocks for loot while fighting through mobs!", file: "lucky-dungeon.mcpack", size: "6.6 KB", tags: ["explore", "lucky"], bannerColor: "#44403c", accent: "#d6d3d1", glowRgb: "214, 211, 209", beta: true, video: null },
-  { name: "Lucky Virus", emoji: "🦠", desc: "Lucky blocks spread like a virus! One block infects nearby blocks, creating a growing chain of chaos!", file: "lucky-virus.mcpack", size: "6.2 KB", tags: ["fun", "lucky"], bannerColor: "#14532d", accent: "#22c55e", glowRgb: "34, 197, 94", beta: true, video: "lucky-virus.mp4", thumbnail: "lucky-virus.jpg" },
+  { name: "Lucky Virus", emoji: "🦠", desc: "Lucky blocks spread like a virus! One block infects nearby blocks, creating a growing chain of chaos!", file: "lucky-virus.mcpack", size: "6.2 KB", tags: ["fun", "lucky"], bannerColor: "#14532d", accent: "#22c55e", glowRgb: "34, 197, 94", beta: true, video: "lucky-virus.mp4", thumbnail: "lucky-virus.jpg", featured: true },
   { name: "Lucky Block Texture", emoji: "🎨", desc: "Resource pack that makes sponge blocks look like classic lucky blocks with the ? symbol!", file: "lucky-block-texture.mcpack", size: "1.9 KB", tags: ["lucky"], bannerColor: "#854d0e", accent: "#eab308", glowRgb: "234, 179, 8", beta: false, video: null },
   { name: "OneBlock", emoji: "1️⃣", desc: "One regenerating block! Break it — it comes back as a random block. 5 phases, 600+ blocks to progression!", file: "oneblock.mcpack", size: "5.6 KB", tags: ["survival"], bannerColor: "#701a75", accent: "#e879f9", glowRgb: "232, 121, 249", beta: true, video: null },
   { name: "More Structures", emoji: "🏰", desc: "Extra structures that spawn in your world — dungeons, towers, ruins, and hidden bases to explore!", file: "more-structures.mcpack", size: "5.8 KB", tags: ["build", "explore"], bannerColor: "#3f3f46", accent: "#e4e4e7", glowRgb: "228, 228, 231", beta: false, video: null },
@@ -653,9 +670,19 @@ if (featuredMod) {
     ? `<button class="featured-btn featured-btn-secondary" onclick="openPreview('${featuredMod.video}', '${featuredMod.name}')">
         <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> PREVIEW</button>`
     : '';
+  const thumbBg = featuredMod.thumbnail
+    ? `<div class="featured-thumb-bg" style="background-image: url('thumbnails/${featuredMod.thumbnail}');"></div>`
+    : '';
+  const featuredVisual = featuredMod.thumbnail
+    ? ''
+    : `<div class="featured-emoji">${featuredMod.emoji}</div>`;
+  const featuredStyle = featuredMod.thumbnail
+    ? `background: ${featuredMod.bannerColor}; box-shadow: 0 0 40px ${featuredMod.accent}20;`
+    : `background: linear-gradient(135deg, ${featuredMod.bannerColor}, ${featuredMod.accent}30); box-shadow: 0 0 40px ${featuredMod.accent}20;`;
   fs.innerHTML = `
-    <div class="featured" style="background: linear-gradient(135deg, ${featuredMod.bannerColor}, ${featuredMod.accent}30); box-shadow: 0 0 40px ${featuredMod.accent}20;">
-      <div class="featured-emoji">${featuredMod.emoji}</div>
+    <div class="featured" style="${featuredStyle}">
+      ${thumbBg}
+      ${featuredVisual}
       <div class="featured-info">
         <div class="featured-label">FEATURED MOD</div>
         <h2>${featuredMod.name}</h2>
