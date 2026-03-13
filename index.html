@@ -1117,7 +1117,7 @@
         <div>
           <div class="world-label">WORLD GENERATOR</div>
           <h2>Build Your Real World in Minecraft</h2>
-          <p>Explore the map below, then open MapSmith to generate a playable Minecraft world of any real-world location — right in your browser. Buildings, roads, rivers, and terrain all included.</p>
+          <p>Explore the map below, select an area, and use the free Arnis tool to generate a playable Minecraft world of any real-world location. Buildings, roads, rivers, and terrain all included.</p>
         </div>
         <div class="world-badge">
           <span class="world-badge-dot"></span>
@@ -1149,9 +1149,13 @@
           <div class="world-sel-stat" id="world-sel-size">—</div>
           <div class="world-sel-stat" id="world-sel-blocks">—</div>
         </div>
-        <a class="world-generate-btn" id="world-generate-link" href="https://arnismc.com/mapsmith" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-          Open MapSmith
+        <button class="world-generate-btn" id="world-copy-btn" title="Copy coordinates to clipboard">
+          <svg viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          Copy Coordinates
+        </button>
+        <a class="world-generate-btn" style="background:rgba(255,255,255,0.08);color:#e2e8f0;" href="https://github.com/louis-e/arnis/releases" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M12 16l-6-6h4V4h4v6h4l-6 6zm-8 4h16v-2H4v2z" fill="currentColor"/></svg>
+          Download Arnis
         </a>
       </div>
     </div>
@@ -1164,16 +1168,15 @@
         </div>
         <div class="world-how-step">
           <div class="world-how-num">2</div>
-          <strong>Open</strong>&nbsp;MapSmith (free, in-browser)
+          <strong>Copy</strong>&nbsp;coordinates &amp; download Arnis
         </div>
         <div class="world-how-step">
           <div class="world-how-num">3</div>
-          <strong>Download</strong>&nbsp;your .mcworld file
+          <strong>Generate</strong>&nbsp;your .mcworld file
         </div>
       </div>
       <div class="world-credit">
-        Powered by <a href="https://arnismc.com" target="_blank">Arnis</a>
-        &middot; <a href="https://arnismc.com/mapsmith" target="_blank">MapSmith</a>
+        Powered by <a href="https://github.com/louis-e/arnis" target="_blank">Arnis</a> (open source)
         &middot; <a href="https://www.openstreetmap.org" target="_blank">OpenStreetMap</a>
       </div>
     </div>
@@ -1546,7 +1549,6 @@ for (let i = 0; i < 20; i++) {
   const selInfo = document.getElementById('world-sel-info');
   const selSize = document.getElementById('world-sel-size');
   const selBlocks = document.getElementById('world-sel-blocks');
-  const genLink = document.getElementById('world-generate-link');
   const selectBtn = document.getElementById('world-select-btn');
   const selectBtnText = document.getElementById('select-btn-text');
 
@@ -1611,7 +1613,7 @@ for (let i = 0; i < 20; i++) {
 
     // Store bbox for CLI users
     const bbox = `${sw.lat.toFixed(6)},${sw.lng.toFixed(6)},${ne.lat.toFixed(6)},${ne.lng.toFixed(6)}`;
-    genLink.setAttribute('data-bbox', bbox);
+    copyBtn.setAttribute('data-bbox', bbox);
   }
 
   map.on('draw:created', function(e) {
@@ -1674,7 +1676,21 @@ for (let i = 0; i < 20; i++) {
     if (e.key === 'Enter') searchLocation();
   });
 
-  // MapSmith opens in new tab — no bbox copy needed (it has its own map picker)
+  // Copy bbox coordinates to clipboard
+  const copyBtn = document.getElementById('world-copy-btn');
+  copyBtn.addEventListener('click', function() {
+    const bbox = this.getAttribute('data-bbox');
+    if (!bbox) return;
+    navigator.clipboard.writeText(bbox).then(() => {
+      const orig = copyBtn.innerHTML;
+      copyBtn.innerHTML = '<svg viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2;width:14px;height:14px"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
+      copyBtn.style.background = 'rgba(34, 197, 94, 0.3)';
+      setTimeout(() => {
+        copyBtn.innerHTML = orig;
+        copyBtn.style.background = '';
+      }, 2000);
+    }).catch(() => {});
+  });
 })();
 </script>
 </body>
