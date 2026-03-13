@@ -697,50 +697,51 @@
     border-color: rgba(59, 130, 246, 0.3) !important;
   }
 
-  /* Map prompt overlay */
-  .world-map-prompt {
+  /* Select Area button — on map next to zoom */
+  .world-select-btn {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    top: 12px;
+    right: 12px;
     z-index: 800;
-    text-align: center;
-    pointer-events: none;
-    transition: opacity 0.4s ease;
+    background: linear-gradient(135deg, #3b82f6, #6366f1);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 18px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
   }
-  .world-map-prompt.hidden { opacity: 0; }
-  .world-map-prompt-icon {
-    width: 56px; height: 56px;
-    background: rgba(59, 130, 246, 0.15);
-    border: 2px solid rgba(59, 130, 246, 0.4);
-    border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    margin: 0 auto 0.75rem;
-    animation: prompt-pulse 2s ease infinite;
+  .world-select-btn:hover {
+    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.5);
+    transform: translateY(-1px);
   }
-  .world-map-prompt-icon svg {
-    width: 24px; height: 24px;
-    stroke: #60a5fa;
+  .world-select-btn.active {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+    animation: select-pulse 1.5s ease infinite;
+  }
+  .world-select-btn.active:hover {
+    box-shadow: 0 4px 20px rgba(34, 197, 94, 0.5);
+  }
+  .world-select-btn svg {
+    width: 16px; height: 16px;
+    stroke: currentColor;
     fill: none;
     stroke-width: 2;
   }
-  .world-map-prompt h3 {
-    font-size: 1rem;
-    color: #fff;
-    margin-bottom: 0.25rem;
-    text-shadow: 0 2px 8px rgba(0,0,0,0.6);
-  }
-  .world-map-prompt p {
-    font-size: 0.8rem;
-    color: rgba(255,255,255,0.6);
-    text-shadow: 0 1px 4px rgba(0,0,0,0.6);
-  }
-  @keyframes prompt-pulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.3); }
-    50% { box-shadow: 0 0 0 12px rgba(59, 130, 246, 0); }
+  @keyframes select-pulse {
+    0%, 100% { box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3); }
+    50% { box-shadow: 0 4px 20px rgba(34, 197, 94, 0.5), 0 0 0 4px rgba(34, 197, 94, 0.15); }
   }
 
-  /* Hide draw toolbar — we auto-trigger it */
+  /* Hide Leaflet draw toolbar */
   .world-map-wrap .leaflet-draw-toolbar { display: none !important; }
 
   /* Selection info overlay */
@@ -1135,14 +1136,10 @@
 
     <div class="world-map-wrap">
       <div id="world-map"></div>
-      <div class="world-map-prompt" id="world-map-prompt">
-        <div class="world-map-prompt-icon">
-          <svg viewBox="0 0 24 24" id="prompt-icon-zoom"><path d="M11 19a8 8 0 100-16 8 8 0 000 16zM21 21l-4.35-4.35M11 8v6M8 11h6"/></svg>
-          <svg viewBox="0 0 24 24" id="prompt-icon-draw" style="display:none"><rect x="3" y="3" width="18" height="18" rx="2" stroke-dasharray="5 3"/></svg>
-        </div>
-        <h3 id="prompt-title">Search or zoom into a location</h3>
-        <p id="prompt-sub">Find your city above, then draw a rectangle</p>
-      </div>
+      <button class="world-select-btn" id="world-select-btn">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" stroke-dasharray="5 3"/></svg>
+        <span id="select-btn-text">Select Area</span>
+      </button>
       <div class="world-selection-info" id="world-sel-info">
         <div class="world-sel-actions">
           <div class="world-sel-label">SELECTED AREA</div>
@@ -1540,9 +1537,8 @@ for (let i = 0; i < 20; i++) {
 
   // Override draw tooltip text
   if (L.drawLocal) {
-    L.drawLocal.draw.toolbar.buttons.rectangle = 'Draw area to generate';
     L.drawLocal.draw.handlers.rectangle.tooltip = {
-      start: 'Click and drag to select your area.'
+      start: 'Click and drag to draw your area.'
     };
   }
 
@@ -1550,43 +1546,35 @@ for (let i = 0; i < 20; i++) {
   const selSize = document.getElementById('world-sel-size');
   const selBlocks = document.getElementById('world-sel-blocks');
   const genLink = document.getElementById('world-generate-link');
-  const mapPrompt = document.getElementById('world-map-prompt');
+  const selectBtn = document.getElementById('world-select-btn');
+  const selectBtnText = document.getElementById('select-btn-text');
 
-  // Let users draw directly on the map by clicking — no toolbar needed
   let drawHandler = null;
-  let hasDrawn = false;
+  let isSelecting = false;
 
-  function enableDraw() {
+  function startDraw() {
     if (drawHandler) drawHandler.disable();
     drawHandler = new L.Draw.Rectangle(map, drawControl.options.draw.rectangle);
     drawHandler.enable();
+    isSelecting = true;
+    selectBtn.classList.add('active');
+    selectBtnText.textContent = 'Drawing...';
   }
 
-  const promptTitle = document.getElementById('prompt-title');
-  const promptSub = document.getElementById('prompt-sub');
-  const promptIconZoom = document.getElementById('prompt-icon-zoom');
-  const promptIconDraw = document.getElementById('prompt-icon-draw');
+  function stopDraw() {
+    if (drawHandler) drawHandler.disable();
+    drawHandler = null;
+    isSelecting = false;
+    selectBtn.classList.remove('active');
+    selectBtnText.textContent = 'Select Area';
+  }
 
-  function updatePrompt() {
-    if (hasDrawn) return;
-    if (map.getZoom() >= 13) {
-      promptTitle.textContent = 'Click and drag to select an area';
-      promptSub.textContent = 'Draw a rectangle around the area you want';
-      promptIconZoom.style.display = 'none';
-      promptIconDraw.style.display = 'block';
+  // Toggle draw mode on button click
+  selectBtn.addEventListener('click', function() {
+    if (isSelecting) {
+      stopDraw();
     } else {
-      promptTitle.textContent = 'Search or zoom into a location';
-      promptSub.textContent = 'Find your city above, then draw a rectangle';
-      promptIconZoom.style.display = 'block';
-      promptIconDraw.style.display = 'none';
-    }
-  }
-
-  // Start drawing mode when zoomed in enough
-  map.on('zoomend moveend', function() {
-    updatePrompt();
-    if (!hasDrawn && map.getZoom() >= 13 && !drawHandler) {
-      enableDraw();
+      startDraw();
     }
   });
 
@@ -1594,10 +1582,7 @@ for (let i = 0; i < 20; i++) {
   document.getElementById('world-redraw-btn').addEventListener('click', function() {
     drawnItems.eachLayer(function(layer) { drawnItems.removeLayer(layer); });
     selInfo.classList.remove('visible');
-    hasDrawn = false;
-    mapPrompt.classList.remove('hidden');
-    updatePrompt();
-    enableDraw();
+    startDraw();
   });
 
   function updateSelectionInfo(bounds) {
@@ -1647,11 +1632,7 @@ for (let i = 0; i < 20; i++) {
 
     drawnItems.addLayer(e.layer);
     updateSelectionInfo(e.layer.getBounds());
-
-    // Hide prompt, mark as drawn
-    hasDrawn = true;
-    mapPrompt.classList.add('hidden');
-    drawHandler = null;
+    stopDraw();
   });
 
   map.on('draw:edited', function(e) {
