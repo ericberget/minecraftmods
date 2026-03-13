@@ -1117,7 +1117,7 @@
         <div>
           <div class="world-label">WORLD GENERATOR</div>
           <h2>Build Your Real World in Minecraft</h2>
-          <p>Select any neighborhood, city, or landmark on the map below and turn it into a playable Minecraft Bedrock world. Powered by OpenStreetMap data — buildings, roads, rivers, and terrain all included.</p>
+          <p>Explore the map below, then open MapSmith to generate a playable Minecraft world of any real-world location — right in your browser. Buildings, roads, rivers, and terrain all included.</p>
         </div>
         <div class="world-badge">
           <span class="world-badge-dot"></span>
@@ -1149,9 +1149,9 @@
           <div class="world-sel-stat" id="world-sel-size">—</div>
           <div class="world-sel-stat" id="world-sel-blocks">—</div>
         </div>
-        <a class="world-generate-btn" id="world-generate-link" href="https://github.com/louis-e/arnis" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24"><path d="M12 16l-6-6h4V4h4v6h4l-6 6zm-8 4h16v-2H4v2z"/></svg>
-          Generate World
+        <a class="world-generate-btn" id="world-generate-link" href="https://arnismc.com/mapsmith" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Open MapSmith
         </a>
       </div>
     </div>
@@ -1160,19 +1160,20 @@
       <div class="world-how-steps">
         <div class="world-how-step">
           <div class="world-how-num">1</div>
-          <strong>Select</strong>&nbsp;an area on the map
+          <strong>Find</strong>&nbsp;your city on the map
         </div>
         <div class="world-how-step">
           <div class="world-how-num">2</div>
-          <strong>Generate</strong>&nbsp;with Arnis (free tool)
+          <strong>Open</strong>&nbsp;MapSmith (free, in-browser)
         </div>
         <div class="world-how-step">
           <div class="world-how-num">3</div>
-          <strong>Play</strong>&nbsp;your world in Bedrock Edition
+          <strong>Download</strong>&nbsp;your .mcworld file
         </div>
       </div>
       <div class="world-credit">
-        Powered by <a href="https://github.com/louis-e/arnis" target="_blank">Arnis</a>
+        Powered by <a href="https://arnismc.com" target="_blank">Arnis</a>
+        &middot; <a href="https://arnismc.com/mapsmith" target="_blank">MapSmith</a>
         &middot; <a href="https://www.openstreetmap.org" target="_blank">OpenStreetMap</a>
       </div>
     </div>
@@ -1608,10 +1609,8 @@ for (let i = 0; i < 20; i++) {
     selBlocks.innerHTML = '~' + Math.round(Math.abs(latDist)).toLocaleString() + ' x ' + Math.round(Math.abs(lngDist)).toLocaleString() + ' <span>blocks</span>';
     selInfo.classList.add('visible');
 
-    // Build Arnis-compatible bbox: lat1,lng1,lat2,lng2
+    // Store bbox for CLI users
     const bbox = `${sw.lat.toFixed(6)},${sw.lng.toFixed(6)},${ne.lat.toFixed(6)},${ne.lng.toFixed(6)}`;
-    genLink.href = `https://github.com/louis-e/arnis#usage`;
-    genLink.title = `Bbox: ${bbox}`;
     genLink.setAttribute('data-bbox', bbox);
   }
 
@@ -1675,19 +1674,7 @@ for (let i = 0; i < 20; i++) {
     if (e.key === 'Enter') searchLocation();
   });
 
-  // Copy bbox on generate click + toast
-  genLink.addEventListener('click', function(e) {
-    const bbox = this.getAttribute('data-bbox');
-    if (bbox && navigator.clipboard) {
-      navigator.clipboard.writeText(bbox).then(() => {
-        const toast = document.createElement('div');
-        toast.className = 'bbox-toast';
-        toast.textContent = 'Coordinates copied! Paste into Arnis.';
-        document.querySelector('.world-map-wrap').appendChild(toast);
-        setTimeout(() => toast.remove(), 2000);
-      }).catch(() => {});
-    }
-  });
+  // MapSmith opens in new tab — no bbox copy needed (it has its own map picker)
 })();
 </script>
 </body>
