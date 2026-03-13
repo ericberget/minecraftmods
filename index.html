@@ -71,13 +71,23 @@
   }
   
   .brand {
-    font-family: var(--font-game);
-    font-size: 1.2rem;
-    color: var(--primary);
-    text-shadow: 2px 2px 0px rgba(0,0,0,0.5);
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
+  }
+  .brand-logo {
+    height: 38px;
+    filter: drop-shadow(0 0 8px rgba(168, 85, 247, 0.4));
+  }
+  .brand-badge {
+    background: rgba(168, 85, 247, 0.2);
+    color: #c084fc;
+    padding: 0.2rem 0.5rem;
+    border-radius: 5px;
+    font-family: var(--font-game);
+    font-size: 0.5rem;
+    letter-spacing: 1px;
+    border: 1px solid rgba(168, 85, 247, 0.3);
   }
   
   .nav-links {
@@ -95,46 +105,10 @@
   .nav-link:hover { color: var(--text-main); }
   .stats { font-weight: 600; color: var(--text-muted); }
 
-  .hero {
-    margin: 1.5rem 5% 1rem;
-    padding: 1.5rem 2rem;
-    border-radius: 16px;
-    background: linear-gradient(135deg, rgba(88, 28, 135, 0.25), rgba(30, 15, 60, 0.7));
-    display: flex;
-    align-items: center;
-    gap: 1.2rem;
-    position: relative;
-    overflow: hidden;
-    border: 1px solid rgba(168, 85, 247, 0.2);
-    box-shadow: 0 0 30px rgba(168, 85, 247, 0.1);
+  .brand-tagline {
+    color: var(--text-muted);
+    font-size: 0.8rem;
   }
-
-  .hero-logo {
-    height: 80px;
-    filter: drop-shadow(0 0 20px rgba(168, 85, 247, 0.4));
-    flex-shrink: 0;
-  }
-
-  .hero-info {
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
-  }
-
-  .hero-badge {
-    background: rgba(168, 85, 247, 0.2);
-    color: #c084fc;
-    padding: 0.25rem 0.6rem;
-    border-radius: 6px;
-    font-family: var(--font-game);
-    font-size: 0.55rem;
-    letter-spacing: 1px;
-    border: 1px solid rgba(168, 85, 247, 0.3);
-    width: fit-content;
-  }
-
-  .hero h1 { font-size: 1.8rem; font-weight: 800; margin: 0; }
-  .hero p { font-size: 0.95rem; color: rgba(255,255,255,0.7); margin: 0; }
   
   .filters {
     display: flex;
@@ -1073,10 +1047,9 @@
   @keyframes modalOut { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(0.9); } }
 
   @media (max-width: 768px) {
-    .hero { padding: 1rem; flex-direction: column; text-align: center; align-items: center; }
-    .hero-logo { height: 60px; }
-    .hero-info { align-items: center; }
-    .hero h1 { font-size: 1.4rem; }
+    .brand-tagline { display: none; }
+    .brand-badge { display: none; }
+    .brand-logo { height: 30px; }
     .grid { grid-template-columns: 1fr; }
     .featured { flex-direction: column; text-align: center; padding: 1.5rem; }
     .featured-actions { justify-content: center; }
@@ -1103,21 +1076,15 @@
 
   <nav>
     <div class="brand">
-      <img src="logo.png" alt="Mace Mods" style="height: 36px; filter: drop-shadow(0 0 6px rgba(168, 85, 247, 0.4));">
+      <img src="logo.png" alt="Mace Mods" class="brand-logo">
+      <div class="brand-badge">BEDROCK EDITION</div>
+      <span class="brand-tagline">Free mods for mobile, console &amp; PC</span>
     </div>
     <div class="nav-links">
       <a href="#world-section" class="nav-link">World Builder</a>
       <div class="stats" id="mod-count">0 Mods</div>
     </div>
   </nav>
-
-  <header class="hero">
-    <img src="logo.png" alt="Mace Mods" class="hero-logo">
-    <div class="hero-info">
-      <div class="hero-badge">MINECRAFT BEDROCK EDITION</div>
-      <p>Free behavior packs for mobile, console, and Windows 10/11.</p>
-    </div>
-  </header>
 
   <!-- ═══════ BUILD YOUR WORLD ═══════ -->
   <div class="world-section" id="world-section">
