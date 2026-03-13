@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mace Mods — Bedrock Edition</title>
 <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Outfit:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css" />
 <style>
   :root {
     --bg-base: #0b0f19;
@@ -487,6 +489,306 @@
     font-size: 0.75rem; color: var(--text-muted); font-weight: 600;
   }
 
+  /* ═══════ BUILD YOUR WORLD ═══════ */
+  .world-section {
+    margin: 0 5% 2rem;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    background: var(--bg-surface);
+    position: relative;
+  }
+  .world-section::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: 20px;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.4), rgba(168, 85, 247, 0.4), rgba(16, 185, 129, 0.4));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 1;
+  }
+  .world-header {
+    padding: 2.5rem 2.5rem 1.5rem;
+    position: relative;
+    z-index: 2;
+  }
+  .world-header-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+  .world-label {
+    font-family: var(--font-game);
+    font-size: 0.5rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #60a5fa;
+    margin-bottom: 0.5rem;
+  }
+  .world-header h2 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin: 0 0 0.5rem;
+    background: linear-gradient(135deg, #60a5fa, #a78bfa, #34d399);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .world-header p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    max-width: 500px;
+  }
+  .world-badge {
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #60a5fa;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .world-badge-dot {
+    width: 6px; height: 6px;
+    background: #22c55e;
+    border-radius: 50%;
+    animation: pulse-dot 2s ease infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  /* Search bar */
+  .world-search {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  .world-search input {
+    flex: 1;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    color: var(--text-main);
+    font-size: 0.9rem;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .world-search input::placeholder { color: var(--text-muted); }
+  .world-search input:focus {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  }
+  .world-search button {
+    background: rgba(59, 130, 246, 0.15);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 10px;
+    padding: 0 1.25rem;
+    color: #60a5fa;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .world-search button:hover {
+    background: rgba(59, 130, 246, 0.3);
+    border-color: #60a5fa;
+  }
+
+  /* Quick-pick locations */
+  .world-places {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 1rem;
+  }
+  .world-place {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 5px 10px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+  .world-place:hover {
+    background: rgba(59, 130, 246, 0.15);
+    border-color: rgba(59, 130, 246, 0.3);
+    color: #60a5fa;
+  }
+
+  /* Map container */
+  .world-map-wrap {
+    position: relative;
+    height: 420px;
+    border-top: 1px solid var(--border);
+  }
+  .world-map-wrap #world-map {
+    height: 100%;
+    width: 100%;
+    background: #0d1117;
+  }
+  /* Override Leaflet styles for dark theme */
+  .world-map-wrap .leaflet-control-zoom a {
+    background: rgba(11, 15, 25, 0.9) !important;
+    color: #94a3b8 !important;
+    border-color: rgba(255,255,255,0.1) !important;
+  }
+  .world-map-wrap .leaflet-control-zoom a:hover {
+    background: rgba(30, 40, 60, 0.95) !important;
+    color: #fff !important;
+  }
+  .world-map-wrap .leaflet-control-attribution {
+    background: rgba(11, 15, 25, 0.8) !important;
+    color: #64748b !important;
+    font-size: 0.65rem !important;
+  }
+  .world-map-wrap .leaflet-control-attribution a {
+    color: #60a5fa !important;
+  }
+  /* Draw controls */
+  .world-map-wrap .leaflet-draw-toolbar a {
+    background-color: rgba(11, 15, 25, 0.9) !important;
+    border-color: rgba(255,255,255,0.1) !important;
+  }
+  .world-map-wrap .leaflet-draw-toolbar a:hover {
+    background-color: rgba(30, 40, 60, 0.95) !important;
+  }
+  .world-map-wrap .leaflet-draw-actions {
+    background: rgba(11, 15, 25, 0.95) !important;
+  }
+  .world-map-wrap .leaflet-draw-actions a {
+    background: rgba(59, 130, 246, 0.2) !important;
+    color: #60a5fa !important;
+    border-color: rgba(59, 130, 246, 0.3) !important;
+  }
+
+  /* Selection info overlay */
+  .world-selection-info {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    background: rgba(11, 15, 25, 0.92);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    z-index: 1000;
+    display: none;
+    min-width: 220px;
+  }
+  .world-selection-info.visible { display: block; }
+  .world-sel-label {
+    font-size: 0.65rem;
+    font-family: var(--font-game);
+    letter-spacing: 1px;
+    color: #60a5fa;
+    margin-bottom: 4px;
+  }
+  .world-sel-stats {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  .world-sel-stat {
+    font-size: 0.8rem;
+    color: var(--text-main);
+    font-weight: 600;
+  }
+  .world-sel-stat span {
+    color: var(--text-muted);
+    font-weight: 400;
+    font-size: 0.7rem;
+  }
+
+  /* Generate button */
+  .world-generate-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+  .world-generate-btn:hover {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+    transform: translateY(-1px);
+  }
+  .world-generate-btn svg { width: 14px; height: 14px; fill: currentColor; }
+
+  /* How it works steps */
+  .world-footer {
+    padding: 1.5rem 2.5rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    background: rgba(0,0,0,0.2);
+  }
+  .world-how-steps {
+    display: flex;
+    gap: 2rem;
+    flex: 1;
+  }
+  .world-how-step {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+  .world-how-num {
+    width: 24px; height: 24px;
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-game);
+    font-size: 0.5rem;
+    color: #60a5fa;
+    flex-shrink: 0;
+  }
+  .world-how-step strong { color: var(--text-main); }
+  .world-credit {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .world-credit a {
+    color: #60a5fa;
+    text-decoration: none;
+  }
+  .world-credit a:hover { text-decoration: underline; }
+
   .footer {
     text-align: center; padding: 2rem;
     color: var(--text-muted); font-size: 0.85rem;
@@ -679,6 +981,11 @@
     .about-avatar { margin: 0 auto; }
     .about-info p { max-width: 100%; }
     .about-badges { justify-content: center; }
+    .world-header-top { flex-direction: column; gap: 0.75rem; }
+    .world-map-wrap { height: 320px; }
+    .world-footer { flex-direction: column; gap: 1rem; padding: 1.5rem; }
+    .world-how-steps { flex-direction: column; gap: 0.75rem; }
+    .world-credit { text-align: center; }
   }
 </style>
 </head>
@@ -714,6 +1021,67 @@
 
     <div class="grid" id="mod-grid"></div>
   </main>
+
+  <!-- ═══════ BUILD YOUR WORLD ═══════ -->
+  <div class="world-section" id="world-section">
+    <div class="world-header">
+      <div class="world-header-top">
+        <div>
+          <div class="world-label">WORLD GENERATOR</div>
+          <h2>Build Your Real World in Minecraft</h2>
+          <p>Select any neighborhood, city, or landmark on the map below and turn it into a playable Minecraft Bedrock world. Powered by OpenStreetMap data — buildings, roads, rivers, and terrain all included.</p>
+        </div>
+        <div class="world-badge">
+          <span class="world-badge-dot"></span>
+          OPEN SOURCE
+        </div>
+      </div>
+      <div class="world-search">
+        <input type="text" id="world-search-input" placeholder="Search for a city or address..." autocomplete="off" />
+        <button id="world-search-btn">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          Search
+        </button>
+      </div>
+      <div class="world-places" id="world-places"></div>
+    </div>
+
+    <div class="world-map-wrap">
+      <div id="world-map"></div>
+      <div class="world-selection-info" id="world-sel-info">
+        <div class="world-sel-label">SELECTED AREA</div>
+        <div class="world-sel-stats">
+          <div class="world-sel-stat" id="world-sel-size">—</div>
+          <div class="world-sel-stat" id="world-sel-blocks">—</div>
+        </div>
+        <a class="world-generate-btn" id="world-generate-link" href="https://github.com/louis-e/arnis" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M12 16l-6-6h4V4h4v6h4l-6 6zm-8 4h16v-2H4v2z"/></svg>
+          Generate World
+        </a>
+      </div>
+    </div>
+
+    <div class="world-footer">
+      <div class="world-how-steps">
+        <div class="world-how-step">
+          <div class="world-how-num">1</div>
+          <strong>Select</strong>&nbsp;an area on the map
+        </div>
+        <div class="world-how-step">
+          <div class="world-how-num">2</div>
+          <strong>Generate</strong>&nbsp;with Arnis (free tool)
+        </div>
+        <div class="world-how-step">
+          <div class="world-how-num">3</div>
+          <strong>Play</strong>&nbsp;your world in Bedrock Edition
+        </div>
+      </div>
+      <div class="world-credit">
+        Powered by <a href="https://github.com/louis-e/arnis" target="_blank">Arnis</a>
+        &middot; <a href="https://www.openstreetmap.org" target="_blank">OpenStreetMap</a>
+      </div>
+    </div>
+  </div>
 
   <div class="install-section">
     <div class="install-header">
@@ -980,6 +1348,189 @@ for (let i = 0; i < 20; i++) {
   pc.appendChild(p);
 }
 
+</script>
+
+<!-- Leaflet + Draw -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
+
+<script>
+// ═══════ BUILD YOUR WORLD — Map Logic ═══════
+(function() {
+  const EXAMPLE_PLACES = [
+    { name: 'New York', lat: 40.7580, lng: -73.9855, zoom: 15 },
+    { name: 'London', lat: 51.5074, lng: -0.1278, zoom: 15 },
+    { name: 'Tokyo', lat: 35.6762, lng: 139.6503, zoom: 15 },
+    { name: 'Paris', lat: 48.8566, lng: 2.3522, zoom: 15 },
+    { name: 'Rome', lat: 41.9028, lng: 12.4964, zoom: 15 },
+    { name: 'Sydney', lat: -33.8688, lng: 151.2093, zoom: 15 },
+    { name: 'San Francisco', lat: 37.7749, lng: -122.4194, zoom: 15 },
+    { name: 'Dubai', lat: 25.2048, lng: 55.2708, zoom: 15 },
+    { name: 'Machu Picchu', lat: -13.1631, lng: -72.5450, zoom: 15 },
+    { name: 'The Vatican', lat: 41.9029, lng: 12.4534, zoom: 17 },
+    { name: 'Giza Pyramids', lat: 29.9792, lng: 31.1342, zoom: 16 },
+    { name: 'Central Park', lat: 40.7829, lng: -73.9654, zoom: 15 },
+  ];
+
+  // Render place chips
+  const placesEl = document.getElementById('world-places');
+  EXAMPLE_PLACES.forEach(p => {
+    const chip = document.createElement('button');
+    chip.className = 'world-place';
+    chip.textContent = p.name;
+    chip.onclick = () => {
+      map.setView([p.lat, p.lng], p.zoom);
+    };
+    placesEl.appendChild(chip);
+  });
+
+  // Initialize map with dark tiles
+  const map = L.map('world-map', {
+    center: [30, 0],
+    zoom: 3,
+    zoomControl: true,
+    attributionControl: true,
+  });
+
+  L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png', {
+    maxZoom: 20,
+    attribution: '&copy; <a href="https://stadiamaps.com/">Stadia</a> &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="https://openstreetmap.org">OSM</a>'
+  }).addTo(map);
+
+  // Drawing tools — rectangle only
+  const drawnItems = new L.FeatureGroup();
+  map.addLayer(drawnItems);
+
+  const drawControl = new L.Control.Draw({
+    edit: { featureGroup: drawnItems },
+    draw: {
+      rectangle: {
+        shapeOptions: {
+          color: '#3b82f6',
+          opacity: 0.8,
+          weight: 2,
+          fillColor: '#3b82f6',
+          fillOpacity: 0.1,
+          dashArray: '8, 6',
+        },
+        repeatMode: false,
+      },
+      polyline: false,
+      polygon: false,
+      circle: false,
+      marker: false,
+      circlemarker: false,
+    }
+  });
+  map.addControl(drawControl);
+
+  // Override draw tooltip text
+  if (L.drawLocal) {
+    L.drawLocal.draw.toolbar.buttons.rectangle = 'Draw area to generate';
+  }
+
+  const selInfo = document.getElementById('world-sel-info');
+  const selSize = document.getElementById('world-sel-size');
+  const selBlocks = document.getElementById('world-sel-blocks');
+  const genLink = document.getElementById('world-generate-link');
+
+  function updateSelectionInfo(bounds) {
+    const sw = bounds.getSouthWest();
+    const ne = bounds.getNorthEast();
+
+    // Calculate area in meters
+    const latDist = (ne.lat - sw.lat) * 111320;
+    const lngDist = (ne.lng - sw.lng) * 111320 * Math.cos((sw.lat + ne.lat) / 2 * Math.PI / 180);
+    const areaM = Math.abs(latDist * lngDist);
+
+    // Minecraft blocks (roughly 1 block = 1 meter at 1x scale)
+    const blocks = Math.round(Math.abs(latDist) * Math.abs(lngDist));
+
+    let sizeText;
+    if (areaM > 1e6) {
+      sizeText = (areaM / 1e6).toFixed(1) + ' km\u00B2';
+    } else {
+      sizeText = Math.round(areaM).toLocaleString() + ' m\u00B2';
+    }
+
+    selSize.innerHTML = sizeText + ' <span>area</span>';
+    selBlocks.innerHTML = '~' + Math.round(Math.abs(latDist)).toLocaleString() + ' x ' + Math.round(Math.abs(lngDist)).toLocaleString() + ' <span>blocks</span>';
+    selInfo.classList.add('visible');
+
+    // Build Arnis-compatible bbox: lat1,lng1,lat2,lng2
+    const bbox = `${sw.lat.toFixed(6)},${sw.lng.toFixed(6)},${ne.lat.toFixed(6)},${ne.lng.toFixed(6)}`;
+    genLink.href = `https://github.com/louis-e/arnis#usage`;
+    genLink.title = `Bbox: ${bbox}`;
+    genLink.setAttribute('data-bbox', bbox);
+  }
+
+  map.on('draw:created', function(e) {
+    // Remove any existing rectangles
+    drawnItems.eachLayer(function(layer) {
+      drawnItems.removeLayer(layer);
+    });
+
+    e.layer.setStyle({
+      color: '#3b82f6',
+      opacity: 0.8,
+      weight: 2,
+      fillColor: '#3b82f6',
+      fillOpacity: 0.1,
+      dashArray: '8, 6',
+    });
+
+    drawnItems.addLayer(e.layer);
+    updateSelectionInfo(e.layer.getBounds());
+  });
+
+  map.on('draw:edited', function(e) {
+    e.layers.eachLayer(function(layer) {
+      if (layer.getBounds) {
+        updateSelectionInfo(layer.getBounds());
+      }
+    });
+  });
+
+  map.on('draw:deleted', function() {
+    selInfo.classList.remove('visible');
+  });
+
+  // Search functionality using Nominatim
+  const searchInput = document.getElementById('world-search-input');
+  const searchBtn = document.getElementById('world-search-btn');
+
+  async function searchLocation() {
+    const query = searchInput.value.trim();
+    if (!query) return;
+
+    try {
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`, {
+        headers: { 'Accept': 'application/json' }
+      });
+      const results = await res.json();
+      if (results.length > 0) {
+        const r = results[0];
+        map.setView([parseFloat(r.lat), parseFloat(r.lon)], 15);
+        searchInput.value = r.display_name.split(',').slice(0, 2).join(',');
+      }
+    } catch (err) {
+      console.error('Search failed:', err);
+    }
+  }
+
+  searchBtn.addEventListener('click', searchLocation);
+  searchInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') searchLocation();
+  });
+
+  // Copy bbox on generate click
+  genLink.addEventListener('click', function(e) {
+    const bbox = this.getAttribute('data-bbox');
+    if (bbox && navigator.clipboard) {
+      navigator.clipboard.writeText(bbox).catch(() => {});
+    }
+  });
+})();
 </script>
 </body>
 </html>
