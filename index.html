@@ -697,6 +697,52 @@
     border-color: rgba(59, 130, 246, 0.3) !important;
   }
 
+  /* Map prompt overlay */
+  .world-map-prompt {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 800;
+    text-align: center;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+  }
+  .world-map-prompt.hidden { opacity: 0; }
+  .world-map-prompt-icon {
+    width: 56px; height: 56px;
+    background: rgba(59, 130, 246, 0.15);
+    border: 2px solid rgba(59, 130, 246, 0.4);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 0.75rem;
+    animation: prompt-pulse 2s ease infinite;
+  }
+  .world-map-prompt-icon svg {
+    width: 24px; height: 24px;
+    stroke: #60a5fa;
+    fill: none;
+    stroke-width: 2;
+  }
+  .world-map-prompt h3 {
+    font-size: 1rem;
+    color: #fff;
+    margin-bottom: 0.25rem;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+  }
+  .world-map-prompt p {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.6);
+    text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+  }
+  @keyframes prompt-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.3); }
+    50% { box-shadow: 0 0 0 12px rgba(59, 130, 246, 0); }
+  }
+
+  /* Hide draw toolbar — we auto-trigger it */
+  .world-map-wrap .leaflet-draw-toolbar { display: none !important; }
+
   /* Selection info overlay */
   .world-selection-info {
     position: absolute;
@@ -718,6 +764,28 @@
     letter-spacing: 1px;
     color: #60a5fa;
     margin-bottom: 4px;
+  }
+  .world-sel-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  .world-redraw-btn {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 6px;
+    padding: 5px 10px;
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  .world-redraw-btn:hover {
+    background: rgba(59, 130, 246, 0.15);
+    border-color: rgba(59, 130, 246, 0.3);
+    color: #60a5fa;
   }
   .world-sel-stats {
     display: flex;
@@ -1083,8 +1151,19 @@
 
     <div class="world-map-wrap">
       <div id="world-map"></div>
+      <div class="world-map-prompt" id="world-map-prompt">
+        <div class="world-map-prompt-icon">
+          <svg viewBox="0 0 24 24" id="prompt-icon-zoom"><path d="M11 19a8 8 0 100-16 8 8 0 000 16zM21 21l-4.35-4.35M11 8v6M8 11h6"/></svg>
+          <svg viewBox="0 0 24 24" id="prompt-icon-draw" style="display:none"><rect x="3" y="3" width="18" height="18" rx="2" stroke-dasharray="5 3"/></svg>
+        </div>
+        <h3 id="prompt-title">Search or zoom into a location</h3>
+        <p id="prompt-sub">Find your city above, then draw a rectangle</p>
+      </div>
       <div class="world-selection-info" id="world-sel-info">
-        <div class="world-sel-label">SELECTED AREA</div>
+        <div class="world-sel-actions">
+          <div class="world-sel-label">SELECTED AREA</div>
+          <button class="world-redraw-btn" id="world-redraw-btn">Redraw</button>
+        </div>
         <div class="world-sel-stats">
           <div class="world-sel-stat" id="world-sel-size">—</div>
           <div class="world-sel-stat" id="world-sel-blocks">—</div>
@@ -1462,12 +1541,64 @@ for (let i = 0; i < 20; i++) {
   // Override draw tooltip text
   if (L.drawLocal) {
     L.drawLocal.draw.toolbar.buttons.rectangle = 'Draw area to generate';
+    L.drawLocal.draw.handlers.rectangle.tooltip = {
+      start: 'Click and drag to select your area.'
+    };
   }
 
   const selInfo = document.getElementById('world-sel-info');
   const selSize = document.getElementById('world-sel-size');
   const selBlocks = document.getElementById('world-sel-blocks');
   const genLink = document.getElementById('world-generate-link');
+  const mapPrompt = document.getElementById('world-map-prompt');
+
+  // Let users draw directly on the map by clicking — no toolbar needed
+  let drawHandler = null;
+  let hasDrawn = false;
+
+  function enableDraw() {
+    if (drawHandler) drawHandler.disable();
+    drawHandler = new L.Draw.Rectangle(map, drawControl.options.draw.rectangle);
+    drawHandler.enable();
+  }
+
+  const promptTitle = document.getElementById('prompt-title');
+  const promptSub = document.getElementById('prompt-sub');
+  const promptIconZoom = document.getElementById('prompt-icon-zoom');
+  const promptIconDraw = document.getElementById('prompt-icon-draw');
+
+  function updatePrompt() {
+    if (hasDrawn) return;
+    if (map.getZoom() >= 13) {
+      promptTitle.textContent = 'Click and drag to select an area';
+      promptSub.textContent = 'Draw a rectangle around the area you want';
+      promptIconZoom.style.display = 'none';
+      promptIconDraw.style.display = 'block';
+    } else {
+      promptTitle.textContent = 'Search or zoom into a location';
+      promptSub.textContent = 'Find your city above, then draw a rectangle';
+      promptIconZoom.style.display = 'block';
+      promptIconDraw.style.display = 'none';
+    }
+  }
+
+  // Start drawing mode when zoomed in enough
+  map.on('zoomend moveend', function() {
+    updatePrompt();
+    if (!hasDrawn && map.getZoom() >= 13 && !drawHandler) {
+      enableDraw();
+    }
+  });
+
+  // Redraw button
+  document.getElementById('world-redraw-btn').addEventListener('click', function() {
+    drawnItems.eachLayer(function(layer) { drawnItems.removeLayer(layer); });
+    selInfo.classList.remove('visible');
+    hasDrawn = false;
+    mapPrompt.classList.remove('hidden');
+    updatePrompt();
+    enableDraw();
+  });
 
   function updateSelectionInfo(bounds) {
     const sw = bounds.getSouthWest();
@@ -1510,12 +1641,17 @@ for (let i = 0; i < 20; i++) {
       opacity: 0.8,
       weight: 2,
       fillColor: '#3b82f6',
-      fillOpacity: 0.1,
+      fillOpacity: 0.15,
       dashArray: '8, 6',
     });
 
     drawnItems.addLayer(e.layer);
     updateSelectionInfo(e.layer.getBounds());
+
+    // Hide prompt, mark as drawn
+    hasDrawn = true;
+    mapPrompt.classList.add('hidden');
+    drawHandler = null;
   });
 
   map.on('draw:edited', function(e) {
